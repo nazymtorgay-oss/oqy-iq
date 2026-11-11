@@ -26,8 +26,30 @@ const QUIZZES={
 function open(id){let x=L.find(y=>y[0]===id);$("grid").style.display="none";document.querySelector(".tabs").style.display="none";$("search").parentElement.style.display="none";$("listTitle").parentElement.style.display="none";$("detail").classList.add("show");let quiz=QUIZZES[id];
 if(quiz){
 let letters=['A','Ә','Б'];
-$("content").innerHTML=`<p class="num">${id}-сабақ · ${x[2]}</p><h2>${x[1]}</h2><div class="notice"><b>Оқып ал:</b> ${quiz.intro} Бұл жерде оқулық мәтінінің толық көшірмесі жоқ.</div>`+quiz.q.map((q,i)=>`<div class="task"><h4>${i+1}-сұрақ. ${q[0]}</h4><div class="options">${q[1].map((opt,j)=>`<label><input type="radio" name="q${i}" value="${j}"> ${letters[j]}) ${opt}</label>`).join('')}</div><div id="fb${i}" class="feedback"></div></div>`).join('')+`<button class="action" id="check">Жауаптарды тексеру</button><div id="result" class="feedback" aria-live="polite"></div>`;
-$("check").onclick=()=>{let score=0;for(let i=0;i<quiz.q.length;i++){let v=document.querySelector(`input[name="q${i}"]:checked`),f=$("fb"+i);if(!v){f.textContent='Жауап таңда';f.style.color='#b45b42';continue}let ok=+v.value===quiz.q[i][2];score+=ok;f.textContent=ok?'✓ Дұрыс!':'Қайта ойланып көр';f.style.color=ok?'#27866b':'#b45b42'}$("result").textContent=`Нәтиже: ${score}/${quiz.q.length}. `+(score===quiz.q.length?'Тамаша! ⭐':'Қате жауаптарды түзетіп, қайта тексер.');if(score===quiz.q.length&&!done.includes(id)){done.push(id);stars++;localStorage.setItem('oqyiq_done',JSON.stringify(done));localStorage.setItem('oqyiq_stars',stars);stats()}};
+$("content").innerHTML=`<p class="num">${id}-сабақ · ${x[2]}</p><h2>${x[1]}</h2><div class="notice"><b>Оқып ал:</b> ${quiz.intro} Бұл жерде оқулық мәтінінің толық көшірмесі жоқ.</div>`+quiz.q.map((q,i)=>`<div class="task"><h4>${i+1}-сұрақ. ${q[0]}</h4><div class="options">${q[1].map((opt,j)=>`<label><input type="radio" name="q${i}" value="${j}"> ${letters[j]}) ${opt}</label>`).join('')}</div><div id="fb${i}" class="feedback"></div></div>`).join('')+`<p style="font-size:13px;color:#777187">Жауапты таңдаған сәтте дұрыс-бұрыстығы бірден көрсетіледі.</p><button class="action" id="check">Қорытынды нәтижені көру</button><div id="result" class="feedback" aria-live="polite"></div>`;
+const updateResult=()=>{
+ let score=0,answered=0;
+ for(let i=0;i<quiz.q.length;i++){
+  const v=document.querySelector(`input[name="q${i}"]:checked`),f=$("fb"+i);
+  if(!v){f.textContent='';continue}
+  answered++;
+  const correct=quiz.q[i][2],ok=+v.value===correct;
+  if(ok)score++;
+  f.textContent=ok?'✓ Дұрыс жауап! Жарайсың!':`✗ Дұрыс емес. Дұрыс жауап: ${quiz.q[i][1][correct]}`;
+  f.style.color=ok?'#27866b':'#b45b42';
+ }
+ $("result").textContent=answered===0?'Жауаптарыңды таңдаудан баста!':`Ағымдағы нәтиже: ${score}/${quiz.q.length} · Жауап берілді: ${answered}/${quiz.q.length}`;
+ if(answered===quiz.q.length){
+  $("result").textContent=`Қорытынды нәтиже: ${score}/${quiz.q.length} (${Math.round(score/quiz.q.length*100)}%). `+(score===quiz.q.length?'Тамаша! Барлығы дұрыс! ⭐':'Қателерді қарап, жауаптарыңды өзгертіп көр.');
+  if(score===quiz.q.length&&!done.includes(id)){done.push(id);stars++;localStorage.setItem('oqyiq_done',JSON.stringify(done));localStorage.setItem('oqyiq_stars',stars);stats()}
+ }
+};
+document.querySelectorAll('input[type="radio"]').forEach(r=>r.addEventListener('change',updateResult));
+$("check").onclick=()=>{
+ updateResult();
+ const unanswered=quiz.q.filter((q,i)=>!document.querySelector(`input[name="q${i}"]:checked`)).length;
+ if(unanswered>0)$("result").textContent+=` Тағы ${unanswered} сұраққа жауап бер.`;
+};
 }else{
 $("content").innerHTML=`<p class="num">${id}-сабақ · ${x[2]}</p><h2>${x[1]}</h2><div class="notice"><b>Тапсырмалар әзірленуде.</b> Бұл сабақтың нақты интерактивті тесті келесі жаңартуда қосылады. Қазір бұл сабақ үшін жұлдызша есептелмейді.</div><div class="task"><h4>Ойлан және жауап бер</h4><p>«${x[1]}» тақырыбынан не үйрендің? Өз сөзіңмен жаз.</p><textarea rows="4" style="width:100%;padding:12px;border:1px solid #ebe6f2;border-radius:9px" placeholder="Жауабыңды жаз..."></textarea></div>`;
 }}
