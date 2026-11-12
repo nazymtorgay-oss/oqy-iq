@@ -4,7 +4,7 @@
 :root{--p:#7651a5;--bg:#f7f5fb;--ink:#29243a;--muted:#777187;--line:#ebe6f2}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px Arial,sans-serif;line-height:1.5}header{background:linear-gradient(120deg,#67458f,#9675bd);color:white;padding:23px max(18px,calc((100% - 1100px)/2))}.brand{display:flex;gap:13px;align-items:center}.logo{width:50px;height:50px;background:white;color:var(--p);border-radius:16px;display:grid;place-items:center;font-size:22px;font-weight:bold}h1{margin:0;font-size:27px}header p{margin:3px 0;color:#f1eafa}.wrap{max-width:1100px;margin:22px auto;padding:0 18px}.hero,.detail{background:white;border:1px solid var(--line);border-radius:20px;padding:20px}.hero{display:flex;justify-content:space-between;gap:20px;align-items:center}.hero h2{margin:0}.hero p{margin:5px 0;color:var(--muted)}.stats{display:flex;gap:9px}.stat{background:#f2edf8;border-radius:13px;padding:10px 15px;text-align:center}.stat b{display:block;color:var(--p);font-size:22px}.stat span{font-size:11px;color:var(--muted)}.toolbar,.tabs{display:flex;gap:9px;margin:18px 0;flex-wrap:wrap}.toolbar input,.toolbar select{padding:12px;border:1px solid var(--line);border-radius:11px;background:white;font-size:14px}.toolbar input{flex:1;min-width:220px}.tab,.back{border:0;border-radius:11px;padding:11px 16px;background:#eee8f5;color:#5f4a78;font-weight:bold;cursor:pointer}.tab.active,.action{background:var(--p);color:white}.heading{display:flex;justify-content:space-between;margin:14px 2px}.heading h3{margin:0}.heading small{color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}.lesson{border:1px solid var(--line);border-radius:16px;background:white;padding:15px;text-align:left;cursor:pointer;min-height:125px;display:flex;flex-direction:column;gap:8px;color:var(--ink)}.lesson:hover{border-color:#c6b3dc;transform:translateY(-2px)}.top{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}.num{background:#f0e9f8;color:var(--p);padding:4px 8px;border-radius:8px;font-weight:bold}.lesson strong{font-size:16px}.sub{font-size:12px;color:var(--muted);margin-top:auto}.detail{display:none;margin-top:16px}.detail.show{display:block}.back{cursor:pointer}.notice{background:#fff7e3;padding:13px;border-radius:12px;color:#6c5628;font-size:13px;margin:15px 0}.task{background:#faf9fc;border:1px solid var(--line);border-radius:13px;padding:14px;margin:12px 0}.task h4{margin:0 0 8px}.options label{display:block;background:white;border:1px solid var(--line);padding:9px;border-radius:9px;margin:7px 0;cursor:pointer}.action{border:0;padding:11px 16px;border-radius:10px;font-weight:bold;cursor:pointer}.feedback{font-weight:bold;margin-top:8px}.empty{background:white;padding:30px;border-radius:14px;color:var(--muted);text-align:center}footer{text-align:center;color:var(--muted);font-size:12px;padding:25px}@media(max-width:650px){.hero{display:block}.stats{margin-top:14px}.hero h2{font-size:20px}}
 </style></head><body>
 <header><div class="brand"><div class="logo">IQ</div><div><h1>ОҚЫ IQ</h1><p>Оқы. Түсін. Ойлан. Жетістікке жет!</p></div></div></header>
-<main class="wrap"><section class="hero"><div><h2>Менің оқу әлемім 📚</h2><p>2-сынып · Әдебиеттік оқу · 1 және 2-бөлім</p></div><div class="stats"><div class="stat"><b>115</b><span>сабақ</span></div><div class="stat"><b id="doneCount">0</b><span>орындалған</span></div><div class="stat"><b id="starCount">0 ⭐</b><span>жұлдызша</span></div></div></section>
+<main class="wrap"><section class="hero"><div><h2>Менің оқу әлемім 📚</h2><p>2-сынып · Әдебиеттік оқу · 1 және 2-бөлім</p></div><div class="stats"><div class="stat"><b>102</b><span>сабақ</span></div><div class="stat"><b id="doneCount">0</b><span>орындалған</span></div><div class="stat"><b id="starCount">0 ⭐</b><span>жұлдызша</span></div></div></section>
 <div class="toolbar"><input id="search" placeholder="🔎 Сабақ атауын іздеу..."><select id="status"><option value="all">Барлық сабақ</option><option value="done">Орындалған</option><option value="todo">Орындалмаған</option></select></div>
 <div class="tabs"><button class="tab active" data-part="1">1-бөлім · 48 сабақ</button><button class="tab" data-part="2">2-бөлім · 54 сабақ</button><button class="tab" data-part="all">Барлығы</button></div>
 <div class="heading"><h3 id="listTitle">1-бөлім</h3><small id="shown"></small></div><div class="grid" id="grid"></div>
@@ -15,6 +15,44 @@ let part="1",done=JSON.parse(localStorage.getItem("oqyiq_done")||"[]"),stars=+lo
 const $=id=>document.getElementById(id);
 function stats(){$("doneCount").textContent=done.length;$("starCount").textContent=stars+" ⭐"}
 function render(){let q=$("search").value.toLowerCase().trim(),s=$("status").value;let a=L.filter(x=>(part==="all"||(part==="1"?x[0]<=48:x[0]>=49))&&(!q||x[1].toLowerCase().includes(q)||x[2].toLowerCase().includes(q))&&(s==="all"||(s==="done"?done.includes(x[0]):!done.includes(x[0]))));$("listTitle").textContent=part==="all"?"Барлық сабақ":part==="1"?"1-бөлім. Өзім туралы және туған өлкем":"2-бөлім. Дені саудың – жаны сау және басқа бөлімдер";$("shown").textContent=a.length+" сабақ";$("grid").innerHTML=a.length?a.map(x=>`<button class="lesson" data-id="${x[0]}"><span class="top"><span class="num">${x[0]}-сабақ</span><span>${done.includes(x[0])?"✓ Орындалды":"Оқу тапсырмасы"}</span></span><strong>${x[1]}</strong><span class="sub">${x[2]}</span></button>`).join(""):'<div class="empty">Сабақ табылмады.</div>';$("grid").querySelectorAll("button").forEach(b=>b.onclick=()=>open(+b.dataset.id));stats()}
+
+function makeTopicQuiz(x){
+ const title=x[1], section=x[2];
+ let theme='тақырыптың мазмұнын түсіну', passage='';
+ if(/Өзім|отбас|дос|үй|ата|әже|ана|әке/i.test(section)){
+  theme='отбасы, достық және қамқорлық';
+  passage=`«${title}» тақырыбы жақын адамдарды қадірлеуді еске салады. Отбасында әр адам бір-біріне көмектесіп, жылы сөз айтуы керек. Досқа адал болу, үлкенді сыйлау және кішіге қамқорлық жасау — жақсы қасиеттер. Осындай әрекеттер үйге қуаныш пен татулық әкеледі.`;
+ }else if(/мектеп/i.test(section)){
+  theme='білім, еңбек және мектеп өмірі';
+  passage=`«${title}» тақырыбы мектеп өмірімен байланысты. Мектепте оқушы жаңа білім алады, кітап оқиды, сұрақ қояды және достарымен бірге жұмыс істейді. Жақсы нәтижеге жету үшін ынта, ұқыптылық және еңбектену қажет.`;
+ }else if(/туған|Отан/i.test(section)){
+  theme='туған жер мен Отанды құрметтеу';
+  passage=`«${title}» тақырыбы туған жерді сүюге үндейді. Отан — әр адамның туған елі мен өскен ортасы. Туған өлкенің табиғатын қорғау, мемлекеттік рәміздерді құрметтеу және ана тілін қадірлеу — әр азаматтың міндеті.`;
+ }else if(/Дені|сау/i.test(section)){
+  theme='денсаулық пен салауатты өмір салты';
+  passage=`«${title}» тақырыбы денсаулықты күтуге арналған. Денсаулықты сақтау үшін таза жүру, дұрыс тамақтану, жеткілікті су ішу және күн сайын қимылдау қажет. Пайдалы әдеттерді күнделікті өмірде қолданған дұрыс.`;
+ }else if(/Салт|ауыз әдебиеті/i.test(section)){
+  theme='ұлттық дәстүр мен ауыз әдебиеті';
+  passage=`«${title}» тақырыбы халқымыздың салт-дәстүрі мен рухани мұрасын танытады. Ертегі, мақал-мәтел, жұмбақ және аңыз арқылы халық жақсы мен жаманды ажыратуды үйреткен. Үлкенді сыйлау, қонақты құрметтеу, бірлік пен ізетті сақтау маңызды.`;
+ }else if(/Қоршаған/i.test(section)){
+  theme='табиғатты аялау және қоршаған орта';
+  passage=`«${title}» тақырыбы табиғат әлеміне назар аудартады. Өсімдіктер, жануарлар, құстар, су мен ауа тіршілік үшін қажет. Табиғатты қорғау үшін ағаш отырғызу, суды ысырап етпеу және құстарға қамқор болу керек.`;
+ }else if(/Саяхат/i.test(section)){
+  theme='саяхат, таным және зерттеу';
+  passage=`«${title}» тақырыбы жаңа жерлерді танып-білуге шақырады. Саяхат кезінде адам табиғатты бақылайды, қызықты мәліметтер жинайды және жаңа нәрсе үйренеді. Зерттеуші сұрақ қойып, байқағанын салыстырып, қорытынды жасайды.`;
+ }else{
+  passage=`«${title}» тақырыбын оқығанда негізгі ойды анықтауға назар аудар. Мәтінді асықпай оқып, маңызды сөздерді белгіле. Кейіпкерлердің іс-әрекетін салыстыр, оқиғаның себебі мен нәтижесін ойлан.`;
+ }
+ const positive=/Дені|сау/i.test(section)?'Денсаулықты күту':/Қоршаған/i.test(section)?'Табиғатты қорғау':/Саяхат/i.test(section)?'Бақылап, жаңа нәрсе үйрену':/мектеп/i.test(section)?'Ынтамен білім алу':/туған|Отан/i.test(section)?'Туған жерді құрметтеу':'Қамқорлық пен сыйластық';
+ return {passage,theme,q:[
+ [`Қосымша мәтіннің негізгі тақырыбы қандай?`,[theme,'Спорт жарысының ережесі','Сандарды қосу тәсілі'],0],
+ [`Мәтінде қандай әрекет құпталады?`,[positive,'Ережені бұзу','Басқаны тыңдамау'],0],
+ [`Мәтіннен қандай қорытынды жасауға болады?`,['Жақсы қасиеттерді күнделікті өмірде қолдану керек','Оқығанды түсінудің қажеті жоқ','Тек өзіңді ойлау керек'],0],
+ [`Мәтінді түсінгеніңді қалай дәлелдейсің?`,['Негізгі ойды өз сөзіңмен айту арқылы','Сұрақтарды оқымай қою арқылы','Тақырыпты ғана көшіріп жазу арқылы'],0],
+ [`Оқығаныңды өмірде қалай қолданасың?`,['Мәтіндегі пайдалы ойға сай әрекет ету арқылы','Мәтінді мүлде елемеу арқылы','Басқаларға кедергі жасау арқылы'],0]
+ ]};
+}
+
 const QUIZZES={
 49:{intro:'Міржақып Дулатовтың «Байлық» мәтінін оқып, жауап бер.',q:[['Мәтіндегі ұстаз шәкіртіне нені түсіндіреді?',['Денсаулықтың қадірін','Тек ақшаның пайдасын','Ойынның ережесін'],0],['«Денсаулық – зор байлық» деген сөз нені білдіреді?',['Денсаулық өте құнды','Ақша бәрінен қымбат','Байлық тек алтын'],0],['Мәтіннің негізгі ойы қандай?',['Адам өз бойындағы игіліктерді бағалауы керек','Көп ұйықтау керек','Жарысқа қатысу керек'],0]]},
 50:{intro:'«Байлық пен ақыл» ертегісін оқып, жауап бер.',q:[['Әкесі ұлдарына не туралы ойлануды ұсынады?',['Байлықтың мәні туралы','Саяхат туралы','Ауа райы туралы'],0],['Кіші ұл қандай байлықты жоғары қояды?',['Ақыл мен білімді','Қымбат киімді','Алтын жүзікті'],0],['Ертегінің негізгі ойы қандай?',['Ақыл – зор байлық','Киім маңызды','Ойын пайдалы'],0]]},
@@ -27,31 +65,17 @@ function open(id){let x=L.find(y=>y[0]===id);$("grid").style.display="none";docu
 if(quiz){
 let letters=['A','Ә','Б'];
 $("content").innerHTML=`<p class="num">${id}-сабақ · ${x[2]}</p><h2>${x[1]}</h2><div class="notice"><b>Оқып ал:</b> ${quiz.intro} Бұл жерде оқулық мәтінінің толық көшірмесі жоқ.</div>`+quiz.q.map((q,i)=>`<div class="task"><h4>${i+1}-сұрақ. ${q[0]}</h4><div class="options">${q[1].map((opt,j)=>`<label><input type="radio" name="q${i}" value="${j}"> ${letters[j]}) ${opt}</label>`).join('')}</div><div id="fb${i}" class="feedback"></div></div>`).join('')+`<p style="font-size:13px;color:#777187">Жауапты таңдаған сәтте дұрыс-бұрыстығы бірден көрсетіледі.</p><button class="action" id="check">Қорытынды нәтижені көру</button><div id="result" class="feedback" aria-live="polite"></div>`;
-const updateResult=()=>{
- let score=0,answered=0;
- for(let i=0;i<quiz.q.length;i++){
-  const v=document.querySelector(`input[name="q${i}"]:checked`),f=$("fb"+i);
-  if(!v){f.textContent='';continue}
-  answered++;
-  const correct=quiz.q[i][2],ok=+v.value===correct;
-  if(ok)score++;
-  f.textContent=ok?'✓ Дұрыс жауап! Жарайсың!':`✗ Дұрыс емес. Дұрыс жауап: ${quiz.q[i][1][correct]}`;
-  f.style.color=ok?'#27866b':'#b45b42';
- }
- $("result").textContent=answered===0?'Жауаптарыңды таңдаудан баста!':`Ағымдағы нәтиже: ${score}/${quiz.q.length} · Жауап берілді: ${answered}/${quiz.q.length}`;
- if(answered===quiz.q.length){
-  $("result").textContent=`Қорытынды нәтиже: ${score}/${quiz.q.length} (${Math.round(score/quiz.q.length*100)}%). `+(score===quiz.q.length?'Тамаша! Барлығы дұрыс! ⭐':'Қателерді қарап, жауаптарыңды өзгертіп көр.');
-  if(score===quiz.q.length&&!done.includes(id)){done.push(id);stars++;localStorage.setItem('oqyiq_done',JSON.stringify(done));localStorage.setItem('oqyiq_stars',stars);stats()}
- }
-};
-document.querySelectorAll('input[type="radio"]').forEach(r=>r.addEventListener('change',updateResult));
-$("check").onclick=()=>{
- updateResult();
- const unanswered=quiz.q.filter((q,i)=>!document.querySelector(`input[name="q${i}"]:checked`)).length;
- if(unanswered>0)$("result").textContent+=` Тағы ${unanswered} сұраққа жауап бер.`;
-};
-}else{
-$("content").innerHTML=`<p class="num">${id}-сабақ · ${x[2]}</p><h2>${x[1]}</h2><div class="notice"><b>Тапсырмалар әзірленуде.</b> Бұл сабақтың нақты интерактивті тесті келесі жаңартуда қосылады. Қазір бұл сабақ үшін жұлдызша есептелмейді.</div><div class="task"><h4>Ойлан және жауап бер</h4><p>«${x[1]}» тақырыбынан не үйрендің? Өз сөзіңмен жаз.</p><textarea rows="4" style="width:100%;padding:12px;border:1px solid #ebe6f2;border-radius:9px" placeholder="Жауабыңды жаз..."></textarea></div>`;
+const update=()=>{let score=0,answered=0;for(let i=0;i<quiz.q.length;i++){let v=document.querySelector(`input[name="q${i}"]:checked`),f=$("fb"+i);if(!v){f.textContent='';continue}answered++;let ok=+v.value===quiz.q[i][2];if(ok)score++;f.textContent=ok?'✓ Дұрыс жауап! Жарайсың!':`✗ Дұрыс емес. Дұрыс жауап: ${quiz.q[i][1][quiz.q[i][2]]}`;f.style.color=ok?'#27866b':'#b45b42'}$("result").textContent=answered===0?'Жауаптарыңды таңдаудан баста!':answered<quiz.q.length?`Ағымдағы нәтиже: ${score}/${quiz.q.length}`:`Қорытынды нәтиже: ${score}/${quiz.q.length} (${Math.round(score/quiz.q.length*100)}%). `+(score===quiz.q.length?'Тамаша! ⭐':'Қателерді түзетіп, қайта орындап көр.');if(answered===quiz.q.length&&score===quiz.q.length&&!done.includes(id)){done.push(id);stars++;localStorage.setItem('oqyiq_done',JSON.stringify(done));localStorage.setItem('oqyiq_stars',stars);stats()}};document.querySelectorAll('input[type="radio"]').forEach(r=>r.addEventListener('change',update));$("check").onclick=update;
+ }else{
+ const generated=makeTopicQuiz(x), letters=['A','Ә','Б'];
+ $("content").innerHTML=`<p class="num">${id}-сабақ · ${x[2]}</p><h2>${x[1]}</h2>
+ <div class="notice"><b>ОҚЫ IQ қосымша тапсырмасы.</b> Алдымен оқулықтағы осы сабақтың шығармасын оқы. Содан кейін төмендегі тақырыптық мәтінді оқып, сұрақтарға жауап бер.</div>
+ <div class="task"><h4>Қосымша оқу мәтіні</h4><p style="line-height:1.8">${generated.passage}</p><small style="color:#777187">Авторлық қосымша мәтін. Оқулықтағы шығарманың орнына жүрмейді.</small></div>`+
+ generated.q.map((q,i)=>`<div class="task"><h4>${i+1}-сұрақ. ${q[0]}</h4><div class="options">${q[1].map((opt,j)=>`<label><input type="radio" name="q${i}" value="${j}"> ${letters[j]}) ${opt}</label>`).join('')}</div><div id="fb${i}" class="feedback"></div></div>`).join('')+
+ `<div class="task"><h4>Ойлан және жаз</h4><p>Осы тақырыптан қандай ой түйдің?</p><textarea rows="3" style="width:100%;padding:12px;border:1px solid #ebe6f2;border-radius:9px" placeholder="Жауабыңды жаз..."></textarea></div>
+ <p style="font-size:13px;color:#777187">Жауапты таңдаған сәтте дұрыс-бұрыстығы бірден көрсетіледі.</p><button class="action" id="check">Қорытынды нәтижені көру</button><div id="result" class="feedback" aria-live="polite"></div>`;
+ const update=()=>{let score=0,answered=0;for(let i=0;i<generated.q.length;i++){const v=document.querySelector(`input[name="q${i}"]:checked`),f=$("fb"+i);if(!v){f.textContent='';continue}answered++;const ok=+v.value===generated.q[i][2];if(ok)score++;f.textContent=ok?'✓ Дұрыс жауап! Жарайсың!':`✗ Дұрыс емес. Дұрыс жауап: ${generated.q[i][1][generated.q[i][2]]}`;f.style.color=ok?'#27866b':'#b45b42'}$("result").textContent=answered===0?'Жауаптарыңды таңдаудан баста!':answered<generated.q.length?`Ағымдағы нәтиже: ${score}/${generated.q.length}`:`Қорытынды нәтиже: ${score}/${generated.q.length} (${Math.round(score/generated.q.length*100)}%). `+(score===generated.q.length?'Тамаша! ⭐':'Қателерді қарап, қайта орындап көр.');if(answered===generated.q.length&&score===generated.q.length&&!done.includes(id)){done.push(id);stars++;localStorage.setItem('oqyiq_done',JSON.stringify(done));localStorage.setItem('oqyiq_stars',stars);stats()}};
+ document.querySelectorAll('input[type="radio"]').forEach(r=>r.addEventListener('change',update));$("check").onclick=update;
 }}
 $("back").onclick=()=>{$("detail").classList.remove("show");$("grid").style.display="grid";document.querySelector(".tabs").style.display="flex";$("search").parentElement.style.display="flex";$("listTitle").parentElement.style.display="flex";render()};
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");part=b.dataset.part;render()});$("search").oninput=render;$("status").onchange=render;render();
